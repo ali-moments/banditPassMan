@@ -55,13 +55,14 @@ or (if executable):
 
 ### 📋 Available Commands
 
-| Command(s)         | Description                                                        |
-|--------------------|--------------------------------------------------------------------|
-| `add`, `a`         | Add a new Bandit level (auto-incremented username).                |
-| `edit`, `e` `<username>` | Edit the password, secret, or solve for a specific Bandit level.   |
-| `list`, `l`        | List all stored Bandit levels.                                     |
-| `show`, `s` `<username>` | Show details for a specific Bandit level.                          |
-| `next`, `n`        | Show the SSH command and password for the next Bandit level.        |
+| Command(s)         | Description                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
+| `add`, `a`         | Add a new Bandit level (auto-incremented username).                         |
+| `edit`, `e` `<username>` | Edit the password, secret, or solve for a specific Bandit level.            |
+| `list`, `l`        | List all stored Bandit levels.                                              |
+| `show`, `s` `<username>` | Show details for a specific Bandit level.                                   |
+| `show`, `s`        | Show details for the last saved Bandit level if no username is provided.    |
+| `next`, `n`        | Show the SSH command and password for the next Bandit level.                |
 
 > 💡 **Tip:** Follow the on-screen prompts or use the commands above to add, retrieve, update, or view passwords for each Bandit level.
 
