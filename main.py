@@ -68,6 +68,28 @@ def show_level(db, username):
     else:
         print(f"No level found for username: {username}")
 
+def show_ssh_command(db):
+    next_username = db.get_next_username()
+    m = re.match(r'bandit(\d+)$', next_username)
+    if not m:
+        print("No levels found or invalid username format.")
+        return
+    prev_num = int(m.group(1)) - 1
+    if prev_num < 0:
+        # First time: show bandit0 login
+        print("level: bandit0")
+        print("server: ssh bandit0@bandit.labs.overthewire.org -p 2220")
+        print("password: bandit0")
+        return
+    prev_username = f'bandit{prev_num}'
+    prev_level = db.load_level_by_username(prev_username)
+    if not prev_level:
+        print("Could not find required level information.")
+        return
+    print(f"level: {next_username}")
+    print(f"server: ssh {next_username}@bandit.labs.overthewire.org -p 2220")
+    print(f"password: {prev_level[3] if prev_level[3] else '(no secret set)'}")  # secret is 3rd index
+
 def sanitize_input(s):
     # Remove leading/trailing whitespace, allow empty string for solve/secret
     if s is None:
@@ -107,7 +129,7 @@ def edit_level(db, username):
 
 def main():
     parser = argparse.ArgumentParser(description="CLI-based BanditPassMan")
-    parser.add_argument("command", choices=["list", "show", "add", "edit"], help="Command to execute")
+    parser.add_argument("command", choices=["list", "show", "add", "edit", "next"], help="Command to execute")
     parser.add_argument("username", nargs="?", help="Username for show/edit commands")
     args = parser.parse_args()
 
@@ -128,6 +150,8 @@ def main():
                 edit_level(db, args.username)
             else:
                 print("Please provide a username for the 'edit' command.")
+        elif args.command == "next":
+            show_ssh_command(db)
     finally:
         db.close()
 
