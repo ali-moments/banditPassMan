@@ -33,27 +33,24 @@ BanditPassMan is a Python-based password manager designed specifically for the [
 Run the password manager from the command line:
 
 ```bash
-python bandit_passman.py <command> [options]
+python main.py <command> [username]
 ```
 
 ### Available Commands
 
-- `add <level> <password>`  
-  Add or update the password for a specific Bandit level.
+- `add`  
+  Add a new Bandit level (auto-incremented username).
 
-- `get <level>`  
-  Retrieve the password for a specific Bandit level.
+- `edit <username>`  
+  Edit the password, secret, or solve for a specific Bandit level.
 
 - `list`  
-  List all stored Bandit levels and their passwords.
+  List all stored Bandit levels.
 
-- `remove <level>`  
-  Remove the password entry for a specific Bandit level.
+- `show <username>`  
+  Show details for a specific Bandit level.
 
-- `help`  
-  Show help information about available commands.
-
-Follow the on-screen prompts or use the commands above to add, retrieve, update, or remove passwords for each Bandit level.
+Follow the on-screen prompts or use the commands above to add, retrieve, update, or view passwords for each Bandit level.
 
 ## Contributing
 
