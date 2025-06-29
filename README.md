@@ -27,6 +27,18 @@
     source venv/bin/activate  # On Windows: venv\Scripts\activate
     ```
 
+3. **(Optional) Make the script executable (Linux/macOS):**
+    ```bash
+    chmod +x banditman
+    ```
+
+4. **(Optional) Add BanditPassMan to your PATH (Linux/macOS):**
+    You can create a symbolic link to `banditman` in a directory that's in your PATH, such as `/usr/local/bin`:
+    ```bash
+    sudo ln -s "$(pwd)/banditman" /usr/local/bin/banditman
+    ```
+    Now you can run `banditman` from anywhere.
+
 ---
 
 ## 🚦 Usage
@@ -34,7 +46,11 @@
 Run the password manager from the command line:
 
 ```bash
-python main.py <command> [username]
+python banditman <command> [username]
+```
+or (if executable):
+```bash
+./banditman <command> [username]
 ```
 
 ### 📋 Available Commands
