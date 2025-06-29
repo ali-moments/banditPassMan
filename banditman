@@ -42,6 +42,10 @@ class DB:
         self.cursor.execute('SELECT * FROM levels WHERE username = ?', (username,))
         return self.cursor.fetchone()
 
+    def load_last_level(self):
+        self.cursor.execute('SELECT * FROM levels ORDER BY id DESC LIMIT 1')
+        return self.cursor.fetchone()
+
     def update_level(self, username, password, secret, solve):
         self.cursor.execute('''
             UPDATE levels SET password = ?, secret = ?, solve = ? WHERE username = ?
@@ -65,15 +69,32 @@ class DB:
 
 def list_levels(db):
     levels = db.load_levels()
+    if not levels:
+        print("No levels found.")
+        return
+    # Print header
+    print(f"{'Username':<10} {'Password':<20} {'Secret':<34} {'Solve'}")
+    print("-" * 80)
     for level in levels:
-        print(level)
+        # level: (id, username, password, secret, solve)
+        username = level[1]
+        password = level[2]
+        secret = level[3] if level[3] else ""
+        solve = level[4] if level[4] else ""
+        print(f"{username:<10} {password:<20} {secret:<34} {solve}")
 
-def show_level(db, username):
-    level = db.load_level_by_username(username)
+def show_level(db, username=None):
+    if username:
+        level = db.load_level_by_username(username)
+    else:
+        level = db.load_last_level()
     if level:
         print(level)
     else:
-        print(f"No level found for username: {username}")
+        if username:
+            print(f"No level found for username: {username}")
+        else:
+            print("No levels found.")
 
 def show_ssh_command(db):
     next_username = db.get_next_username()
@@ -106,16 +127,35 @@ def sanitize_input(s):
 def add_level(db):
     username = db.get_next_username()
     print(f"Adding new level with username: {username}")
-    while True:
-        password = input("Enter password: ").strip()
+    m = re.match(r'bandit(\d+)$', username)
+    if m and int(m.group(1)) == 0:
+        # For bandit0, prompt for password
+        while True:
+            password = input("Enter password: ").strip()
+            if not password:
+                print("Password cannot be empty.")
+            else:
+                break
+    else:
+        # For banditN (N>0), use previous level's secret as password, show it in prompt
+        prev_num = int(m.group(1)) - 1
+        prev_username = f'bandit{prev_num}'
+        prev_level = db.load_level_by_username(prev_username)
+        if not prev_level:
+            print(f"Previous level '{prev_username}' not found. Cannot add {username}.")
+            return
+        prev_secret = prev_level[3] if prev_level[3] else ''
+        # Show previous secret as default password in prompt
+        prompt = f"Enter password [{prev_secret}]: "
+        password = input(prompt).strip()
         if not password:
-            print("Password cannot be empty.")
-        else:
-            break
+            password = prev_secret
+        print(f"Password for {username} will be set to: {password}")
     secret = sanitize_input(input("Enter secret: "))
     solve = sanitize_input(input("Enter solve: "))
     db.save_level(username, password, secret, solve)
     print(f"Level '{username}' added successfully.")
+    show_ssh_command(db)  # Show next command after adding
 
 def edit_level(db, username):
     level = db.load_level_by_username(username)
@@ -150,10 +190,8 @@ def main():
         if args.command in ("list", "l"):
             list_levels(db)
         elif args.command in ("show", "s"):
-            if args.username:
-                show_level(db, args.username)
-            else:
-                print("Please provide a username for the 'show' command.")
+            # If username is not provided, show last saved level
+            show_level(db, args.username)
         elif args.command in ("add", "a"):
             add_level(db)
         elif args.command in ("edit", "e"):
