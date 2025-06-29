@@ -1,5 +1,6 @@
 import sqlite3
 import argparse
+import re
 
 class DB:
     def __init__(self, db_name='data.db'):
@@ -40,6 +41,18 @@ class DB:
         ''', (password, secret, solve, username))
         self.conn.commit()
 
+    def get_next_username(self):
+        self.cursor.execute("SELECT username FROM levels")
+        usernames = [row[0] for row in self.cursor.fetchall()]
+        max_num = -1
+        for uname in usernames:
+            m = re.match(r'bandit(\d+)$', uname)
+            if m:
+                num = int(m.group(1))
+                if num > max_num:
+                    max_num = num
+        return f'bandit{max_num+1}'
+
     def close(self):
         self.conn.close()
 
@@ -55,21 +68,38 @@ def show_level(db, username):
     else:
         print(f"No level found for username: {username}")
 
+def sanitize_input(s):
+    # Remove leading/trailing whitespace, allow empty string for solve/secret
+    if s is None:
+        return ''
+    return s.strip()
+
 def add_level(db):
-    username = input("Enter username: ")
-    password = input("Enter password: ")
-    secret = input("Enter secret: ")
-    solve = input("Enter solve: ")
+    username = db.get_next_username()
+    print(f"Adding new level with username: {username}")
+    while True:
+        password = input("Enter password: ").strip()
+        if not password:
+            print("Password cannot be empty.")
+        else:
+            break
+    secret = sanitize_input(input("Enter secret: "))
+    solve = sanitize_input(input("Enter solve: "))
     db.save_level(username, password, secret, solve)
-    print("Level added successfully.")
+    print(f"Level '{username}' added successfully.")
 
 def edit_level(db, username):
     level = db.load_level_by_username(username)
     if level:
         print(f"Editing level for username: {username}")
-        password = input("Enter new password: ")
-        secret = input("Enter new secret: ")
-        solve = input("Enter new solve: ")
+        while True:
+            password = input("Enter new password: ").strip()
+            if not password:
+                print("Password cannot be empty.")
+            else:
+                break
+        secret = sanitize_input(input("Enter new secret: "))
+        solve = sanitize_input(input("Enter new solve: "))
         db.update_level(username, password, secret, solve)
         print("Level updated successfully.")
     else:
