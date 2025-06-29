@@ -39,13 +39,13 @@ python main.py <command> [username]
 
 ### 📋 Available Commands
 
-| Command            | Description                                                        |
+| Command(s)         | Description                                                        |
 |--------------------|--------------------------------------------------------------------|
-| `add`              | Add a new Bandit level (auto-incremented username).                |
-| `edit <username>`  | Edit the password, secret, or solve for a specific Bandit level.   |
-| `list`             | List all stored Bandit levels.                                     |
-| `show <username>`  | Show details for a specific Bandit level.                          |
-| `next`             | Show the SSH command and password for the next Bandit level.        |
+| `add`, `a`         | Add a new Bandit level (auto-incremented username).                |
+| `edit`, `e` `<username>` | Edit the password, secret, or solve for a specific Bandit level.   |
+| `list`, `l`        | List all stored Bandit levels.                                     |
+| `show`, `s` `<username>` | Show details for a specific Bandit level.                          |
+| `next`, `n`        | Show the SSH command and password for the next Bandit level.        |
 
 > 💡 **Tip:** Follow the on-screen prompts or use the commands above to add, retrieve, update, or view passwords for each Bandit level.
 

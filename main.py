@@ -129,28 +129,32 @@ def edit_level(db, username):
 
 def main():
     parser = argparse.ArgumentParser(description="CLI-based BanditPassMan")
-    parser.add_argument("command", choices=["list", "show", "add", "edit", "next"], help="Command to execute")
+    parser.add_argument(
+        "command",
+        choices=["list", "l", "show", "s", "add", "a", "edit", "e", "next", "n"],
+        help="Command to execute"
+    )
     parser.add_argument("username", nargs="?", help="Username for show/edit commands")
     args = parser.parse_args()
 
     db = DB()
 
     try:
-        if args.command == "list":
+        if args.command in ("list", "l"):
             list_levels(db)
-        elif args.command == "show":
+        elif args.command in ("show", "s"):
             if args.username:
                 show_level(db, args.username)
             else:
                 print("Please provide a username for the 'show' command.")
-        elif args.command == "add":
+        elif args.command in ("add", "a"):
             add_level(db)
-        elif args.command == "edit":
+        elif args.command in ("edit", "e"):
             if args.username:
                 edit_level(db, args.username)
             else:
                 print("Please provide a username for the 'edit' command.")
-        elif args.command == "next":
+        elif args.command in ("next", "n"):
             show_ssh_command(db)
     finally:
         db.close()
